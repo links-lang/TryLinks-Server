@@ -1,4 +1,5 @@
 var user_quiries = require('./user-quiries');
+var file_quiries = require('./file-quiries');
 
 module.exports = {
     // User DB actions.
@@ -6,8 +7,9 @@ module.exports = {
     getAUser: user_quiries.getAUser,
     createUser: user_quiries.createUser,
     updateUser: user_quiries.updateUser,
-    removeUser: user_quiries.removeUser
+    removeUser: user_quiries.removeUser,
 
     // File DB actions.
-    // TODO: complete when file db logic is ready.
+    getAllFilesForUser: file_quiries.getAllFilesForUser,
+    updateFile: file_quiries.updateFile
 };

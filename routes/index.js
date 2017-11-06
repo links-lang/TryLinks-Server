@@ -9,6 +9,9 @@ router.post('/api/users', db.createUser);
 router.put('/api/users/:id', db.updateUser);
 router.delete('/api/users/:id', db.removeUser);
 
+router.get('/api/files/:id', db.getAllFilesForUser);
+router.put('/api/files/:id', db.updateFile);
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
