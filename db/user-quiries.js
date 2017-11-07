@@ -4,101 +4,82 @@ var db = require('./db-connect');
 
 /**
  * All DB actions for LinksUser.
- */ 
+ */
 
-function getAllUsers(req, res, next) {
+function getAllUsers(callback) {
     db.any('select * from "LinksUser"')
-        .then(function (data) {
-            res.status(200)
-                .json({
-                    status: 'success',
-                    data: data,
-                    message: 'Retrived all Links users'
-                });
-        })
-        .catch(function (err) {
-            return next(err);
-        });
+        .then(data => callback({
+            status: 'success',
+            data: data,
+            message: 'Retrived all Links users'
+        }))
+        .catch(err => callback(err));
 }
 
-function getAUser(req, res, next) {
-    const user_id = parseInt(req.params.id);
-    db.one('select * from "LinksUser" where "userId" = $1', user_id)
-        .then(function (data) {
-            res.status(200)
-                .json({
-                    status: 'success',
-                    data: data,
-                    message: 'Retrieved one Links user'
-                });
-        })
-        .catch(function (err) {
-            return next(err);
-        });
+function getUserByUsername(username, callback) {
+    db.one('select * from "LinksUser" where "username" = $1', username)
+        .then(data => callback({
+            status: 'success',
+            data: data,
+            message: 'Retrieved one Links user'
+        }))
+        .catch(err => callback(err));
 }
 
-function createUser(req, res, next) {
+function createUser(username, email, password, callback) {
     db.none('insert into "LinksUser"("username", "email", "password", "last_tutorial")' +
-        'values(${username}, ${email}, ${password}, 0)', req.body)
-        .then(function () {
-            res.status(200)
-                .json({
-                    status: 'success',
-                    message: 'inserted new Links user'
-                });
-        })
-        .catch(function (err) {
-            return next(err);
-        });
+        'values($1, $2, $3, 0)', [username, email, password])
+        .then(callback({
+            status: 'success',
+            message: 'inserted new Links user'
+        }))
+        .catch(err => callback(err));
 }
 
-function updateUser(req, res, next) {
-    const user_id = parseInt(req.params.id);
+function updateUser(user_id, update, callback) {
     var change_details = [];
-    if (req.body.username != null && req.body.username != undefined) {
-        change_details.push('"username"=\'' + req.body.username + '\'');
+    if (update.username != null && update.username != undefined) {
+        change_details.push('"username"=\'' + update.username + '\'');
     }
-    if (req.body.email != null && req.body.email != undefined) {
-        change_details.push('"email"=\'' +req.body.email + '\'');
+    if (update.email != null && update.email != undefined) {
+        change_details.push('"email"=\'' + update.email + '\'');
     }
-    if (req.body.password != null && req.body.password != undefined) {
-        change_details.push('"password"=\'' +req.body.password + '\'');
+    if (update.password != null && update.password != undefined) {
+        change_details.push('"password"=\'' + update.password + '\'');
     }
-    const last_tutorial = parseInt(req.body.last_tutorial);
-    if (last_tutorial != null && last_tutorial != undefined) {
-        change_details.push('"last_tutorial"='+last_tutorial);
+    const last_tutorial = parseInt(update.last_tutorial);
+    if (last_tutorial != null && last_tutorial != undefined && !isNaN(last_tutorial)) {
+        console.log('last tutorial included');
+        change_details.push('"last_tutorial"=' + last_tutorial);
     }
     var change_str = change_details.join(',');
+
+    if (change_str.length == 0) {
+        callback({ status: 'error', message: 'Nothing to update!' });
+        return;
+    }
+
     db.none('update "LinksUser" set ' + change_str + ' where "userId"=$1', user_id)
-        .then(function () {
-            res.status(200)
-                .json({
-                    status: 'success',
-                    message: 'Updated Links User with id: ' + user_id
-                });
-        })
-        .catch(function (err) {
-            return next(err);
-        });
+        .then(callback({
+            status: 'success',
+            message: 'Updated Links User with id: ' + user_id
+        }))
+        .catch(err => callback(err));
 }
 
-function removeUser(req, res, next) {
-    const user_id = parseInt(req.params.id);
+function removeUser(user_id, callback) {
     db.result('delete from "LinksUser" where "userId"=$1', user_id)
-        .then(function(result) {
-            res.status(200)
-                .json({
-                    status: 'success',
-                    message: 'Removed ' + result.rowCount + ' user with id: ' + user_id
-                });    
-        }).catch(function(err) {
-            return next(err);
-        });
+        .then(result => callback({
+            status: 'success',
+            message: 'Removed ' + result.rowCount + ' user with id: ' + user_id
+        }))
+        .catch(err => callback(err));
+
 }
 
 module.exports = {
     getAllUsers: getAllUsers,
-    getAUser: getAUser,
+    getUserByUsername: getUserByUsername,
     createUser: createUser,
     updateUser: updateUser,
     removeUser: removeUser
