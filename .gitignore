@@ -68,3 +68,5 @@ db/db-connect.js
 views/
 
 .eslintrc.json
+
+secret.js

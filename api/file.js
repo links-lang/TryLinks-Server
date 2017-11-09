@@ -1,2 +1,1 @@
-var file_db = require('../db/file-quiries');
-
+var fileDB = require('../db/file-quiries')
