@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var user_api = require('../api/user');
 
-router.post('/api/user/signup', user_api.userSignUp);
+router.post('/api/user/signup', user_api.signup);
 router.post('/api/user/login', user_api.login);
 
 /* GET home page. */

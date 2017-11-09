@@ -1,7 +1,7 @@
 var user_db = require('../db/user-quiries');
 var bcrypt = require('bcryptjs');
 
-function userSignUp(req, res, next) {
+function signup(req, res, next) {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
@@ -40,7 +40,7 @@ function login(req, res, next) {
     // Check if user exists.
     user_db.getUserByUsername(username, result => {
         if (result.status == 'success') {
-            if (password === result.data.password) {
+            if (bcrypt.compareSync(password, result.data.password)) {
                 res.status(200)
                     .json({
                         status: 'success',
@@ -65,7 +65,44 @@ function login(req, res, next) {
     });
 }
 
+// function update(req, res, next) {
+//     const user_id = parseInt(req.body.user_id);
+//     if (isNaN(user_id)) {
+//         res.status(500).json({status: 'error', message: 'Unrecognizable user id'});
+//         return ;
+//     }
+//     const username = req.body.username;
+//     const password = req.body.password;
+
+//     // Check if user exists.
+//     user_db.getUserByUsername(username, result => {
+//         if (result.status == 'success') {
+//             if (password === result.data.password) {
+//                 res.status(200)
+//                     .json({
+//                         status: 'success',
+//                         message: 'Login successful'
+//                     });
+//                 // TODO: set cookie.
+//             } else {
+//                 res.status(401)
+//                     .json({
+//                         status: 'error',
+//                         message: 'Incorrect login or password'
+//                     });
+//             }
+//         } else {
+//             res.status(404)
+//                 .json({
+//                     status: 'error',
+//                     message: 'Username not found'
+//                 });
+
+//         }
+//     });
+// }
+
 module.exports = {
-    userSignUp: userSignUp,
+    signup: signup,
     login: login
 };
