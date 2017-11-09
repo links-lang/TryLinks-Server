@@ -36,11 +36,8 @@ function createUser(username, email, password, callback) {
         .catch(err => callback(err));
 }
 
-function updateUser(user_id, update, callback) {
+function updateUser(username, update, callback) {
     var change_details = [];
-    if (update.username != null && update.username != undefined) {
-        change_details.push('"username"=\'' + update.username + '\'');
-    }
     if (update.email != null && update.email != undefined) {
         change_details.push('"email"=\'' + update.email + '\'');
     }
@@ -59,10 +56,10 @@ function updateUser(user_id, update, callback) {
         return;
     }
 
-    db.none('update "LinksUser" set ' + change_str + ' where "userId"=$1', user_id)
+    db.none('update "LinksUser" set ' + change_str + ' where "username"=$1', username)
         .then(callback({
             status: 'success',
-            message: 'Updated Links User with id: ' + user_id
+            message: 'Updated Links User with username: ' + username
         }))
         .catch(err => callback(err));
 }

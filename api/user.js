@@ -65,44 +65,48 @@ function login(req, res, next) {
     });
 }
 
-// function update(req, res, next) {
-//     const user_id = parseInt(req.body.user_id);
-//     if (isNaN(user_id)) {
-//         res.status(500).json({status: 'error', message: 'Unrecognizable user id'});
-//         return ;
-//     }
-//     const username = req.body.username;
-//     const password = req.body.password;
+function update(req, res, next) {
+    // TODO: check cookie.
 
-//     // Check if user exists.
-//     user_db.getUserByUsername(username, result => {
-//         if (result.status == 'success') {
-//             if (password === result.data.password) {
-//                 res.status(200)
-//                     .json({
-//                         status: 'success',
-//                         message: 'Login successful'
-//                     });
-//                 // TODO: set cookie.
-//             } else {
-//                 res.status(401)
-//                     .json({
-//                         status: 'error',
-//                         message: 'Incorrect login or password'
-//                     });
-//             }
-//         } else {
-//             res.status(404)
-//                 .json({
-//                     status: 'error',
-//                     message: 'Username not found'
-//                 });
+    const username = req.body.username;
+    user_db.getUserByUsername(username, result => {
+        if (result.status == 'success') {
+            const email = req.body.email;
+            const password = req.body.password;
+            const last_tutorial = req.body.last_tutorial;
+            const salt = bcrypt.genSaltSync();
+            const hash = password == undefined ? undefined : bcrypt.hashSync(password, salt);
+            user_db.updateUser(username, { email: email, password: hash, last_tutorial: last_tutorial },
+                update_result => {
+                    if (update_result.status == 'success') {
+                        res.status(200)
+                            .json({
+                                status: 'success',
+                                message: 'User updated'
+                            });
+                    } else {
+                        res.status(500)
+                            .json({
+                                status: 'error',
+                                message: 'User failed to update'
+                            });
 
-//         }
-//     });
-// }
+                    }
+                });
+        } else {
+            res.status(404)
+                .json({
+                    status: 'error',
+                    message: 'Username not found'
+                });
+
+        }
+    });
+
+}
 
 module.exports = {
     signup: signup,
-    login: login
+    login: login,
+    update: update
 };
