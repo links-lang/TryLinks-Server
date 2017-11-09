@@ -33,37 +33,39 @@ function userSignUp(req, res, next) {
     });
 }
 
-// function login(req, res, next) {
-//     const username = req.body.username;
-//     const password = req.body.password;
+function login(req, res, next) {
+    const username = req.body.username;
+    const password = req.body.password;
 
-//     // Check if username is used.
-//     user_db.getUserByUsername(username, result => {
-//         if (!result.userId) {
-//             res.status(404)
-//                 .json({
-//                     status: 'error',
-//                     message: 'Username not found'
-//                 });
-//         } else {
-//             if (password === result.data.password) {
-//                 res.status(200)
-//                 .json({
-//                     status: 'success',
-//                     message: 'Login successful'
-//                 });
-//                 // TODO: set cookie.
-//             } else {
-//                 res.status(401)
-//                 .json({
-//                     status: 'error',
-//                     message: 'Incorrect login or password'
-//                 });
-//             }
-//         }
-//     });
-// }
+    // Check if user exists.
+    user_db.getUserByUsername(username, result => {
+        if (result.status == 'success') {
+            if (password === result.data.password) {
+                res.status(200)
+                    .json({
+                        status: 'success',
+                        message: 'Login successful'
+                    });
+                // TODO: set cookie.
+            } else {
+                res.status(401)
+                    .json({
+                        status: 'error',
+                        message: 'Incorrect login or password'
+                    });
+            }
+        } else {
+            res.status(404)
+                .json({
+                    status: 'error',
+                    message: 'Username not found'
+                });
+
+        }
+    });
+}
 
 module.exports = {
-    userSignUp: userSignUp
+    userSignUp: userSignUp,
+    login: login
 };
