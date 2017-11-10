@@ -41,12 +41,12 @@ function login (req, res, next) {
   userDB.getUserByUsername(username, result => {
     if (result.status === 'success') {
       if (bcrypt.compareSync(password, result.data.password)) {
+        req.session.user = result.data
         res.status(200)
           .json({
             status: 'success',
             message: 'Login successful'
           })
-        // TODO: set cookie.
       } else {
         res.status(401)
           .json({
@@ -65,7 +65,14 @@ function login (req, res, next) {
 }
 
 function update (req, res, next) {
-  // TODO: check cookie.
+  if (!req.session.user) {
+    res.status(401)
+      .json({
+        status: 'error',
+        message: 'No authentication. Make sure you have logged in'
+      })
+    return
+  }
 
   const username = req.body.username
   userDB.getUserByUsername(username, result => {
