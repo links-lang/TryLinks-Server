@@ -99,7 +99,7 @@ function update (req, res, next) {
           }
         })
     } else {
-      res.status(404)
+      res.status(500)
         .json({
           status: 'error',
           message: 'Username not found'
