@@ -29,6 +29,10 @@ app.use(session({
   cookie: {maxAge: 1000 * 60 * 60 * 24}
 }))
 
+app.get('/test', function (req, res) {
+  res.sendFile(path.join(__dirname, 'test.html'))
+})
+
 app.use('/', index)
 
 // catch 404 and forward to error handler
