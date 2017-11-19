@@ -1,7 +1,17 @@
 const { spawn } = require('child_process')
 function initInteractive (req, res, next) {
+  if (!req.session.user) {
+    res.status(401)
+      .json({
+        status: 'error',
+        message: 'No authentication. Make sure you have logged in'
+      })
+    return
+  }
+
   var io = require('../sockets_base').io
-  io.of('/nickwu').on('connection', function (socket) {
+  var socketPath = '/' + req.session.user.username
+  io.of(socketPath).on('connection', function (socket) {
     // start new shell process
     var shell = spawn('linx')
 

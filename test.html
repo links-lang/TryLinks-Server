@@ -65,27 +65,39 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script>
 	  $(function () {
-      $.get("http://localhost:5000/api/initInteractive", function (data, status) {
-				console.log(("Data: " + data + "\nStatus: " + status))
-        var socket = io.connect('/nickwu');
-        $('form').submit(function(){
-					const cmd = $('#m').val();
-					$('#messages').append($('<li>').text(cmd));
-					socket.emit('new command', cmd);
-					$('#m').val('');
-					return false; 
-				});
+			$.ajax({
+  			type: "POST",
+  			url: "http://localhost:5000/api/user/login",
+  			data: {
+					username: 'nickwu',
+					password: '12345'
+				},
+  			success: function() {
+					$.get("http://localhost:5000/api/initInteractive", function (data, status) {
+									console.log(("Data: " + data + "\nStatus: " + status))
+									var socket = io.connect('/nickwu');
+									$('form').submit(function(){
+										const cmd = $('#m').val();
+										$('#messages').append($('<li>').text(cmd));
+										socket.emit('new command', cmd);
+										$('#m').val('');
+										return false; 
+									});
 
-        socket.on('shell output', function(output){
-          console.log(output);
-					$('#messages').append($('<li>').append($('<pre>').text(output)));
-					});
+									socket.on('shell output', function(output){
+										console.log(output);
+										$('#messages').append($('<li>').append($('<pre>').text(output)));
+										});
 
-        socket.on('shell error', function(error){
-          console.log(error);
-					$('#messages').append($('<li>').attr('class', 'shell-error').append($('<pre>').text(error)));
-					});
-      });
+									socket.on('shell error', function(error){
+										console.log(error);
+										$('#messages').append($('<li>').attr('class', 'shell-error').append($('<pre>').text(error)));
+										});
+								});
+				},
+			});
+
+      
       })
 	</script>
 </body>
