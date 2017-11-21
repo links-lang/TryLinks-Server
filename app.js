@@ -29,9 +29,15 @@ app.use(session({
   cookie: {maxAge: 1000 * 60 * 60 * 24}
 }))
 
+app.get('/login', function (req, res) {
+  res.sendFile(path.join(__dirname, 'login.html'))
+})
+
 app.get('/test', function (req, res) {
   res.sendFile(path.join(__dirname, 'test.html'))
 })
+
+app.use(favicon(path.join(__dirname, 'favicon.ico')))
 
 app.use('/', index)
 
