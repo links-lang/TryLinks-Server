@@ -33,7 +33,8 @@ function initInteractive (req, res, next) {
     socket.on('disconnect', function () {
       console.log('killing shell')
       shell.kill()
-      socket.disconnect(true)
+      console.log('shell killed: ' + shell.killed)
+      delete io.nsps[socketPath]
     })
   })
 
