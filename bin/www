@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+/* eslint-disable */
 /**
  * Module dependencies.
  */
@@ -26,7 +26,7 @@ var server = http.createServer(app);
  */
 
 server.listen(port);
-var io = require('socket.io').listen(server);
+var io = require('socket.io').listen(server, {origins: 'http://localhost:5000, http://localhost:8080'});
 require('../sockets_base')(io);
 server.on('error', onError);
 server.on('listening', onListening);
