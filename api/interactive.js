@@ -38,7 +38,7 @@ function initInteractive (req, res, next) {
     })
   })
 
-  res.status(200).json({message: 'socket inited successfully'})
+  res.status(200).json({path: socketPath})
 }
 
 module.exports = {
