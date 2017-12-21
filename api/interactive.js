@@ -1,4 +1,6 @@
 const { spawn } = require('child_process')
+const forbiddenMessage = 'Error: \nYou cannot include "@" in the command, please check and try again.\n'
+
 function initInteractive (req, res, next) {
   if (!req.session.user) {
     res.status(401)
@@ -17,7 +19,14 @@ function initInteractive (req, res, next) {
 
     socket.on('new command', function (cmd) {
       console.log('new command: ' + cmd)
-      shell.stdin.write(cmd + '\n')
+
+      const forbiddenPattern = /.*@/g
+      if (forbiddenPattern.test(cmd)) {
+        console.log(`Encounter forbidden command: ${cmd}`)
+        socket.emit('shell error', forbiddenMessage)
+      } else {
+        shell.stdin.write(cmd + '\n')
+      }
     })
 
     shell.stdout.on('data', (data) => {
