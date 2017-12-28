@@ -1,13 +1,14 @@
-const Promise = require('bluebird')
-const fs = require('fs')
+const fs = require('fs-extra')
 const pf = require('portfinder')
 const { spawn } = require('child_process')
 
 module.exports.createConfigFile = function (username) {
-  pf.getPortPromise()
+  return pf.getPortPromise()
     .then(port => {
       module.exports.port = port
-      return new Promise(fs.writeFile(`/tmp/nickwu_config`, `port=${port}`))
+      const filename = `tmp/nickwu_config`
+      const data = `port=${port}\n`
+      return fs.outputFile(filename, data)
     }).catch(err => {
       console.log(err)
       throw err

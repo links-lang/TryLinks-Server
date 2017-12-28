@@ -70,3 +70,5 @@ views/
 .eslintrc.json
 
 secret.js
+
+tmp/
