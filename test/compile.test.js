@@ -1,6 +1,6 @@
 const api = require('../api/compile')
 
-api.createConfigFile('nickwu')
+api.createSourceFile('nickwu', 1)
   .then(() => {
     console.log('success')
   }).catch(err => {

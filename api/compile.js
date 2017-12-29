@@ -16,8 +16,16 @@ module.exports.createConfigFile = username => {
     })
 }
 
-module.exports.createSourceFile = (username) => {
-  fileDB.getFileForUser(user)
+module.exports.createSourceFile = (username, tutorialId) => {
+  return fileDB.getFileForUser(username, tutorialId)
+    .then((result) => {
+      const fileData = result.data
+      const filename = `tmp/nickwu_source.links`
+      return fs.outputFile(filename, fileData)
+    }).catch(err => {
+      console.log(err)
+      throw err
+    })
 }
 
 module.exports.compileLinksFile = function (req, res, next) {
@@ -31,7 +39,8 @@ module.exports.compileLinksFile = function (req, res, next) {
   }
 
   const username = req.session.user.username
-  this.createConfigFile(username)
+  const tutorialId = req.session.user.last_tutorial
+  Promise.all([this.createConfigFile(username), this.createSourceFile(username, tutorialId)])
     .then(() => {
       var linxProc = spawn(`linx --config=/tmp/${username}_conig /tmp/${username}_source.links`)
 
