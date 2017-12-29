@@ -1,8 +1,9 @@
 const fs = require('fs-extra')
 const pf = require('portfinder')
+const fileDB = require('../db/file-quiries')
 const { spawn } = require('child_process')
 
-module.exports.createConfigFile = function (username) {
+module.exports.createConfigFile = username => {
   return pf.getPortPromise()
     .then(port => {
       module.exports.port = port
@@ -13,6 +14,10 @@ module.exports.createConfigFile = function (username) {
       console.log(err)
       throw err
     })
+}
+
+module.exports.createSourceFile = (username) => {
+  fileDB.getFileForUser(user)
 }
 
 module.exports.compileLinksFile = function (req, res, next) {

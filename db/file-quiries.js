@@ -4,24 +4,17 @@ var db = require('./db-connect')
 /**
  * All DB actions for LinksUser.
  */
-function getFileForUser (userId, tutorialId, next) {
-  db.one('select * from "LinksFile" where "userId" = $1 and "tutorial_id"=$2', [userId, tutorialId])
-    .then(data => next({
-      status: 'success',
-      data: data,
-      message: 'Retrieved All files for one Links user'
-    }))
-    .catch(err => next(err))
+function getFileForUser (username, tutorialId) {
+  return db.one('select "data" from "LinksFile" where "username" = $1 and "tutorial_id"=$2', [username, tutorialId])
 }
 
-function updateFile (userId, tutorialId, data, next) {
-  if (data == null || data === undefined || data.length === 0) return
-  db.none('update "LinksFile" set "data"=$1 where "userId" = $2 and "tutorial_id"=$3', [data, userId, tutorialId])
-    .then(next({
-      status: 'success',
-      message: 'Updated Links File for userID: ' + userId + ' and tutorial number: ' + tutorialId
-    }))
-    .catch(err => next(err))
+function updateFile (username, tutorialId, data, next) {
+  if (data == null || data === undefined || data.length === 0) {
+    const err = {status: 'error', message: 'empty or null source to update'}
+    throw err
+  }
+  return db.none('update "LinksFile" set "data"=$1 where "username" = $2 and "tutorial_id"=$3',
+    [data, username, tutorialId])
 }
 
 module.exports = {

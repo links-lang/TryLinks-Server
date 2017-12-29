@@ -7,30 +7,32 @@ function signup (req, res, next) {
   const password = req.body.password
 
   // Check if username is used.
-  userDB.getUserByUsername(username, result => {
-    if (result.status === 'success') {
+  userDB.getUserByUsername(username)
+    .then(() => {
       res.status(409)
         .json({
           status: 'error',
           message: 'Username used'
         })
-    } else {
+    })
+    .catch(() => {
       // Hashing
       const salt = bcrypt.genSaltSync()
       const hash = bcrypt.hashSync(password, salt)
-      console.log(hash)
 
-      userDB.createUser(username, email, hash, result => {
-        if (result.status === 'success') {
+      userDB.createUser(username, email, hash)
+        .then(() => {
           res.status(200)
-            .json(result.message)
-        } else {
+            .json({
+              status: 'success',
+              message: `User ${username} registered`
+            })
+        })
+        .catch(err => {
           res.status(500)
-            .json(result)
-        }
-      })
-    }
-  })
+            .json(err)
+        })
+    })
 }
 
 function login (req, res, next) {
@@ -38,10 +40,10 @@ function login (req, res, next) {
   const password = req.body.password
 
   // Check if user exists.
-  userDB.getUserByUsername(username, result => {
-    if (result.status === 'success') {
-      if (bcrypt.compareSync(password, result.data.password)) {
-        req.session.user = result.data
+  userDB.getUserByUsername(username)
+    .then((user) => {
+      if (bcrypt.compareSync(password, user.password)) {
+        req.session.user = user
         res.status(200)
           .json({
             status: 'success',
@@ -54,14 +56,13 @@ function login (req, res, next) {
             message: 'Incorrect login or password'
           })
       }
-    } else {
+    }).catch(() => {
       res.status(404)
         .json({
           status: 'error',
           message: 'Username not found'
         })
-    }
-  })
+    })
 }
 
 function update (req, res, next) {
@@ -75,37 +76,36 @@ function update (req, res, next) {
   }
 
   const username = req.body.username
-  userDB.getUserByUsername(username, result => {
-    if (result.status === 'success') {
+  // Check if user exists.
+  userDB.getUserByUsername(username)
+    .then((user) => {
       const email = req.body.email
       const password = req.body.password
       const lastTutorial = req.body.last_tutorial
       const salt = bcrypt.genSaltSync()
       const hash = password === undefined ? undefined : bcrypt.hashSync(password, salt)
-      userDB.updateUser(username, { email: email, password: hash, last_tutorial: lastTutorial },
-        updateResult => {
-          if (updateResult.status === 'success') {
-            res.status(200)
-              .json({
-                status: 'success',
-                message: 'User updated'
-              })
-          } else {
-            res.status(500)
-              .json({
-                status: 'error',
-                message: 'User failed to update'
-              })
-          }
+      userDB.updateUser(username, { email: email, password: hash, last_tutorial: lastTutorial })
+        .then(() => {
+          res.status(200)
+            .json({
+              status: 'success',
+              message: 'User updated'
+            })
         })
-    } else {
-      res.status(500)
+        .catch(() => {
+          res.status(500)
+            .json({
+              status: 'error',
+              message: 'User failed to update'
+            })
+        })
+    }).catch(() => {
+      res.status(404)
         .json({
           status: 'error',
           message: 'Username not found'
         })
-    }
-  })
+    })
 }
 
 module.exports = {

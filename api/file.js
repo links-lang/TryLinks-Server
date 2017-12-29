@@ -11,25 +11,26 @@ function readFile (req, res, next) {
     return
   }
 
-  const userId = req.session.user.userId
+  const username = req.session.user.username
   const tutorial = parseInt(req.body.tutorial)
   if (isNaN(tutorial)) {
     res.status(403).json({status: 'error', message: 'Unrecongnizable tutorial number'})
     return
   }
-  fileDB.getFileForUser(userId, tutorial, result => {
-    if (result.status === 'success') {
+  fileDB.getFileForUser(username, tutorial)
+    .then((result) => {
       res.status(200).json({
         status: 'success',
         fileData: result.data
       })
-    } else {
+    })
+    .catch((err) => {
+      console.log(err)
       res.status(500).json({
         status: 'error',
         message: 'failed to extract files from DB'
       })
-    }
-  })
+    })
 }
 
 function writeFile (req, res, next) {
@@ -43,23 +44,25 @@ function writeFile (req, res, next) {
     return
   }
 
-  const userId = req.session.user.userId
+  const username = req.session.user.username
   const tutorial = parseInt(req.body.tutorial)
   const fileData = req.body.fileData
   if (isNaN(tutorial)) {
     res.status(403).json({status: 'error', message: 'Unrecongnizable tutorial number'})
     return
   }
-  fileDB.updateFile(userId, tutorial, fileData, result => {
-    if (result.status === 'success') {
-      res.status(200).json(result)
-    } else {
+  fileDB.updateFile(username, tutorial, fileData)
+    .then(() => {
+      res.status(200).json({
+        status: 'success',
+        message: 'source updated'
+      })
+    }).catch(() => {
       res.status(500).json({
         status: 'error',
         message: 'failed to write file to DB'
       })
-    }
-  })
+    })
 }
 
 module.exports = {

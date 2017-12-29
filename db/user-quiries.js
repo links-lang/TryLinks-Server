@@ -5,37 +5,20 @@ var db = require('./db-connect')
  * All DB actions for LinksUser.
  */
 
-function getAllUsers (next) {
-  db.any('select * from "LinksUser"')
-    .then(data => next({
-      status: 'success',
-      data: data,
-      message: 'Retrived all Links users'
-    }))
-    .catch(err => next(err))
+function getAllUsers () {
+  return db.any('select * from "LinksUser"')
 }
 
-function getUserByUsername (username, next) {
-  db.one('select * from "LinksUser" where "username" = $1', username)
-    .then(data => next({
-      status: 'success',
-      data: data,
-      message: 'Retrieved one Links user'
-    }))
-    .catch(err => next(err))
+function getUserByUsername (username) {
+  return db.one('select * from "LinksUser" where "username" = $1', username)
 }
 
-function createUser (username, email, password, next) {
-  db.none('insert into "LinksUser"("username", "email", "password", "last_tutorial")' +
+function createUser (username, email, password) {
+  return db.none('insert into "LinksUser"("username", "email", "password", "last_tutorial")' +
         'values($1, $2, $3, 0)', [username, email, password])
-    .then(next({
-      status: 'success',
-      message: 'inserted new Links user'
-    }))
-    .catch(err => next(err))
 }
 
-function updateUser (username, update, next) {
+function updateUser (username, update) {
   var changeDetails = []
   if (update.email != null && update.email !== undefined) {
     changeDetails.push('"email"=\'' + update.email + '\'')
@@ -51,25 +34,15 @@ function updateUser (username, update, next) {
   var changeStr = changeDetails.join(',')
 
   if (changeStr.length === 0) {
-    next({ status: 'error', message: 'Nothing to update!' })
-    return
+    const err = { status: 'error', message: 'Nothing to update!' }
+    throw err
   }
 
-  db.none('update "LinksUser" set ' + changeStr + ' where "username"=$1', username)
-    .then(next({
-      status: 'success',
-      message: 'Updated Links User with username: ' + username
-    }))
-    .catch(err => next(err))
+  return db.none('update "LinksUser" set ' + changeStr + ' where "username"=$1', username)
 }
 
-function removeUser (userId, next) {
-  db.result('delete from "LinksUser" where "userId"=$1', userId)
-    .then(result => next({
-      status: 'success',
-      message: 'Removed ' + result.rowCount + ' user with id: ' + userId
-    }))
-    .catch(err => next(err))
+function removeUser (username) {
+  db.result('delete from "LinksUser" where "username"=$1', username)
 }
 
 module.exports = {
