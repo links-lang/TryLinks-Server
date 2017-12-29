@@ -43,11 +43,18 @@ module.exports.compileLinksFile = function (req, res, next) {
   Promise.all([module.exports.createConfigFile(username),
     module.exports.createSourceFile(username, tutorialId)])
     .then(() => {
-      var linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
+      // Kill existing links program for the user.
+      if (module.exports.linxProc !== null &&
+        module.exports.linxProc !== undefined &&
+        !module.exports.linxProc.killed) {
+        module.exports.linxProc.kill()
+      }
 
-      linxProc.stderr.on('data', (data) => {
+      module.exports.linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
+
+      module.exports.linxProc.stderr.on('data', (data) => {
         console.log(data.toString())
-        linxProc.kill()
+        module.exports.linxProc.kill()
         res.status(500).json({
           status: 'compile error',
           message: data
@@ -67,4 +74,25 @@ module.exports.compileLinksFile = function (req, res, next) {
           detail: error
         })
     })
+}
+
+module.exports.stopLinksProgram = function (req, res, next) {
+  if (!req.session.user) {
+    res.status(401)
+      .json({
+        status: 'error',
+        message: 'No authentication. Make sure you have logged in'
+      })
+    return
+  }
+
+  if (module.exports.linxProc !== null &&
+    module.exports.linxProc !== undefined &&
+    !module.exports.linxProc.killed) {
+    module.exports.linxProc.kill()
+  }
+
+  res.status(200).json({
+    status: 'killed'
+  })
 }
