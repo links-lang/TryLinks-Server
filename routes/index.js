@@ -11,6 +11,7 @@ router.post('/api/user/update', userAPI.update)
 router.post('/api/file/read', fileAPI.readFile)
 router.post('/api/file/write', fileAPI.writeFile)
 router.get('/api/initInteractive', interativeAPI.initInteractive)
+router.get('/api/compile', compileAPI.compileLinksFile)
 router.get('/api/compile/createConfig', compileAPI.createConfigFile)
 
 /* GET home page. */

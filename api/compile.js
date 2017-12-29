@@ -7,7 +7,7 @@ module.exports.createConfigFile = username => {
   return pf.getPortPromise()
     .then(port => {
       module.exports.port = port
-      const filename = `tmp/nickwu_config`
+      const filename = `tmp/${username}_config`
       const data = `port=${port}\n`
       return fs.outputFile(filename, data)
     }).catch(err => {
@@ -20,7 +20,7 @@ module.exports.createSourceFile = (username, tutorialId) => {
   return fileDB.getFileForUser(username, tutorialId)
     .then((result) => {
       const fileData = result.data
-      const filename = `tmp/nickwu_source.links`
+      const filename = `tmp/${username}_source.links`
       return fs.outputFile(filename, fileData)
     }).catch(err => {
       console.log(err)
@@ -40,12 +40,13 @@ module.exports.compileLinksFile = function (req, res, next) {
 
   const username = req.session.user.username
   const tutorialId = req.session.user.last_tutorial
-  Promise.all([this.createConfigFile(username), this.createSourceFile(username, tutorialId)])
+  Promise.all([module.exports.createConfigFile(username),
+    module.exports.createSourceFile(username, tutorialId)])
     .then(() => {
-      var linxProc = spawn(`linx --config=/tmp/${username}_conig /tmp/${username}_source.links`)
+      var linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
 
       linxProc.stderr.on('data', (data) => {
-        console.log(data)
+        console.log(data.toString())
         linxProc.kill()
         res.status(500).json({
           status: 'compile error',
