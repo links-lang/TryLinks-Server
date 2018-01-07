@@ -47,7 +47,8 @@ function login (req, res, next) {
         res.status(200)
           .json({
             status: 'success',
-            message: 'Login successful'
+            message: 'Login successful',
+            data: user
           })
       } else {
         res.status(401)
