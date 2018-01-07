@@ -67,13 +67,13 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script>
 		$(function () {
-			$.get("http://localhost:5000/api/initInteractive", function (data, status) {
-				console.log(("Data: " + data + "\nStatus: " + status))
-				var socket = io.connect('/nickwu');
+			$.get("http://localhost:5000/api/compile", function (data, status) {
+				console.log(data)
+				var socket = io.connect('/nickwu_tutorial');
 				$('form').submit(function () {
 					const cmd = $('#m').val();
 					$('#messages').append($('<li>').text(cmd));
-					socket.emit('new command', cmd);
+					socket.emit('compile');
 					$('#m').val('');
 					return false;
 				});
@@ -83,7 +83,12 @@
 					$('#messages').append($('<li>').append($('<pre>').text(output)));
 				});
 
-				socket.on('shell error', function (error) {
+				socket.on('compiled', function (port) {
+					console.log(port);
+					$('#messages').append($('<li>').attr('class', 'shell-error').append($('<pre>').text(`port: ${port}`)));
+				});
+
+				socket.on('compile error', function (error) {
 					console.log(error);
 					$('#messages').append($('<li>').attr('class', 'shell-error').append($('<pre>').text(error)));
 				});

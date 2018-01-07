@@ -12,7 +12,6 @@ router.post('/api/file/read', fileAPI.readFile)
 router.post('/api/file/write', fileAPI.writeFile)
 router.get('/api/initInteractive', interativeAPI.initInteractive)
 router.get('/api/compile', compileAPI.compileLinksFile)
-router.get('/api/kill', compileAPI.stopLinksProgram)
 
 /* GET home page. */
 router.get('/', function (req, res, next) {

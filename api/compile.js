@@ -1,8 +1,7 @@
 const fs = require('fs-extra')
 const pf = require('portfinder')
 const fileDB = require('../db/file-quiries')
-const { execFile } = require('child_process')
-var spawn = require('child-process-promise').spawn
+const { spawn } = require('child_process')
 
 module.exports.createConfigFile = username => {
   return pf.getPortPromise()
@@ -29,6 +28,14 @@ module.exports.createSourceFile = (username, tutorialId) => {
     })
 }
 
+function killLinksProc () {
+  if (module.exports.linxProc !== null &&
+      module.exports.linxProc !== undefined &&
+      !module.exports.linxProc.killed) {
+    module.exports.linxProc.kill()
+  }
+}
+
 module.exports.compileLinksFile = function (req, res, next) {
   if (!req.session.user) {
     res.status(401)
@@ -41,115 +48,34 @@ module.exports.compileLinksFile = function (req, res, next) {
 
   const username = req.session.user.username
   const tutorialId = req.session.user.last_tutorial
-  Promise.all([module.exports.createConfigFile(username),
-    module.exports.createSourceFile(username, tutorialId)])
-    .then(() => {
-      // Kill existing links program for the user.
-      if (module.exports.linxProc !== null &&
-        module.exports.linxProc !== undefined &&
-        !module.exports.linxProc.killed) {
-        module.exports.linxProc.kill()
-      }
-
-      module.exports.linxProc = spawn('linx',
-        [`--config=tmp/${username}_config`, `tmp/${username}_source.links`],
-        { capture: [ 'stdout', 'stderr' ] })
-
-      var proc = module.exports.linxProc.childProcess
-
-      proc.stdout.on('data', function (data) {
-        console.log('[spawn] stdout: ', data.toString())
-        res.status(200).json({
-          status: 'compiled and deployed',
-          port: module.exports.port
-        })
-      })
-
-      module.exports.linxProc.then(function (result) {
-        console.log('[spawn] stdout: ', result.stdout.toString())
-        res.status(200).json({
-          status: 'compiled and deployed',
-          port: module.exports.port
-        })
-      })
-        .catch(function (err) {
-          console.error('[spawn] stderr: ', err.stderr)
-          res.status(500).json({
-            status: 'compile error',
-            message: err.stderr
+  var io = require('../sockets_base').io
+  var socketPath = `/${username}_tutorial`
+  io.of(socketPath).on('connection', function (socket) {
+    socket.on('compile', function () {
+      Promise.all([module.exports.createConfigFile(username),
+        module.exports.createSourceFile(username, tutorialId)])
+        .then(() => {
+          module.exports.linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
+          module.exports.linxProc.stdout.on('data', (data) => {
+            socket.emit('shell output', data.toString())
+            console.log('sent stdout: ' + data)
           })
-        })
-      // module.exports.linxProc = execFile('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`], (error, stdout, stderr) => {
-      //   if (error) {
-      //     console.log(error)
-      //   }
-      //   if (stderr) {
-      //     console.log(stderr)
-      //     res.status(500).json({
-      //       status: 'compile error',
-      //       message: stderr
-      //     })
-      //   }
-      //   if (stdout) {
-      //     res.status(200).json({
-      //       status: 'compiled and deployed',
-      //       port: module.exports.port
-      //     })
-      //   }
-      // })
-      // module.exports.linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
 
-      // if (module.exports.linxProc.stderr.length > 0) {
-      //   const compileError = module.exports.linxProc.stderr.toString()
-      //   console.log(compileError)
-      //   res.status(500).json({
-      //     status: 'compile error',
-      //     message: compileError
-      //   })
-      // } else {
-      //   res.status(200).json({
-      //     status: 'compiled and deployed',
-      //     port: module.exports.port
-      //   })
-      // }
-      // module.exports.linxProc.stderr.('data', (data) => {
-      //   console.log(data.toString())
-      //   res.status(500).json({
-      //     status: 'compile error',
-      //     message: data.toString()
-      //   })
-      // })
-
-      // if (!module.exports.linxProc.killed) {
-      // }
-    })
-    .catch(error => {
-      console.log(error)
-      res.status(500)
-        .json({
-          status: 'error',
-          detail: error
+          module.exports.linxProc.stderr.on('data', (data) => {
+            socket.emit('compile error', data.toString())
+            console.log('sent stderr: ' + data)
+          })
+          socket.emit('compiled', module.exports.port)
+        }).catch(error => {
+          console.log(error)
+          socket.emit('compile error', 'could not build config and source files')
         })
     })
-}
-
-module.exports.stopLinksProgram = function (req, res, next) {
-  if (!req.session.user) {
-    res.status(401)
-      .json({
-        status: 'error',
-        message: 'No authentication. Make sure you have logged in'
-      })
-    return
-  }
-
-  if (module.exports.linxProc !== null &&
-    module.exports.linxProc !== undefined &&
-    !module.exports.linxProc.killed) {
-    module.exports.linxProc.kill()
-  }
-
-  res.status(200).json({
-    status: 'killed'
+    socket.on('disconnect', function () {
+      console.log('killing shell')
+      killLinksProc()
+      delete io.nsps[socketPath]
+    })
   })
+  res.status(200).json({path: socketPath})
 }
