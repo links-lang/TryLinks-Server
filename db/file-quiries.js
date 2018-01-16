@@ -8,7 +8,7 @@ function getFileForUser (username, tutorialId) {
   return db.one('select "data" from "LinksFile" where "username" = $1 and "tutorial_id"=$2', [username, tutorialId])
 }
 
-function updateFile (username, tutorialId, data, next) {
+function updateFile (username, tutorialId, data) {
   if (data == null || data === undefined || data.length === 0) {
     const err = {status: 'error', message: 'empty or null source to update'}
     throw err
