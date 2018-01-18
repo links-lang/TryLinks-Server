@@ -78,7 +78,8 @@ function update (req, res, next) {
     return
   }
 
-  const username = req.body.username
+  const username = req.session.user.username
+  console.log(`update API: username=${username}`)
   // Check if user exists.
   userDB.getUserByUsername(username)
     .then((user) => {
@@ -86,13 +87,16 @@ function update (req, res, next) {
       const password = req.body.password
       const lastTutorial = req.body.last_tutorial
       const salt = bcrypt.genSaltSync()
-      const hash = password === undefined ? undefined : bcrypt.hashSync(password, salt)
+      const hash = password === null ? null : bcrypt.hashSync(password, salt)
       userDB.updateUser(username, { email: email, password: hash, last_tutorial: lastTutorial })
-        .then(() => {
+        .then(() => userDB.getUserByUsername(username))
+        .then((user) => {
+          req.session.user = user
           res.status(200)
             .json({
               status: 'success',
-              message: 'User updated'
+              message: 'User updated',
+              'data': user
             })
         })
         .catch(() => {
@@ -102,7 +106,8 @@ function update (req, res, next) {
               message: 'User failed to update'
             })
         })
-    }).catch(() => {
+    }).catch((error) => {
+      console.log(error)
       res.status(404)
         .json({
           status: 'error',
