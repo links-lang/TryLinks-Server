@@ -8,7 +8,7 @@ module.exports.createConfigFile = username => {
     .then(port => {
       module.exports.port = port
       const filename = `tmp/${username}_config`
-      const data = `port=${port}\n`
+      const data = `port=${port}\njslibdir=/Users/NickWu/.opam/4.04.0/lib/links/js\njsliburl=/lib/\n`
       return fs.outputFile(filename, data)
     }).catch(err => {
       console.log(err)
@@ -33,6 +33,7 @@ function killLinksProc () {
       module.exports.linxProc !== undefined &&
       !module.exports.linxProc.killed) {
     module.exports.linxProc.kill()
+    console.log('killing shell')
   }
 }
 
@@ -52,8 +53,11 @@ module.exports.compileLinksFile = function (req, res, next) {
   var socketPath = `/${username}_tutorial`
   io.of(socketPath).on('connection', function (socket) {
     socket.on('compile', function () {
-      Promise.all([module.exports.createConfigFile(username),
-        module.exports.createSourceFile(username, tutorialId)])
+      console.log(`Compiling Tutorial ${tutorialId} for user ${username}`)
+      var promises = [module.exports.createConfigFile(username),
+        module.exports.createSourceFile(username, tutorialId),
+        killLinksProc()]
+      Promise.all(promises)
         .then(() => {
           module.exports.linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
           module.exports.linxProc.stdout.on('data', (data) => {
@@ -72,7 +76,6 @@ module.exports.compileLinksFile = function (req, res, next) {
         })
     })
     socket.on('disconnect', function () {
-      console.log('killing shell')
       killLinksProc()
       delete io.nsps[socketPath]
     })
