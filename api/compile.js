@@ -8,7 +8,7 @@ module.exports.createConfigFile = username => {
     .then(port => {
       module.exports.port = port
       const filename = `tmp/${username}_config`
-      const data = `port=${port}\njslibdir=/Users/NickWu/.opam/4.04.0/lib/links/js\njsliburl=/lib/\n`
+      const data = `port=${port}\njslibdir=/Users/NickWu/.opam/4.04.0/lib/links/js\njsliburl=/lib/\ndatabase_driver=postgresql\ndatabase_args=localhost:5432:links:links`
       return fs.outputFile(filename, data)
     }).catch(err => {
       console.log(err)
