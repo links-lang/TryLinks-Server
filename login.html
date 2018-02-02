@@ -29,6 +29,9 @@
           success: function () {
             console.log('login successful!');
             window.location.replace('http://localhost:5000/test');
+          },
+          error: function (request, status, error) {
+            console.log(request.responseText);
           }
         });
         return false;

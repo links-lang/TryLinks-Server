@@ -53,7 +53,7 @@ app.get('/login', function (req, res) {
 })
 
 app.get('/test', function (req, res) {
-  res.sendFile(path.join(__dirname, 'test.html'))
+  res.sendFile(path.join(__dirname, 'testrepl.html'))
 })
 
 app.use(favicon(path.join(__dirname, 'favicon.ico')))
