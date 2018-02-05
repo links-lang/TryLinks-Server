@@ -116,8 +116,20 @@ function update (req, res, next) {
     })
 }
 
+function logout (req, res, next) {
+  if (req.session.user) {
+    req.session.user = null
+  }
+  res.status(200)
+    .json({
+      status: 'success',
+      message: 'User logged out'
+    })
+}
+
 module.exports = {
   signup: signup,
   login: login,
-  update: update
+  update: update,
+  logout: logout
 }
