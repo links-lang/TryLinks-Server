@@ -33,7 +33,7 @@ function killLinksProc () {
       module.exports.linxProc !== undefined &&
       !module.exports.linxProc.killed) {
     module.exports.linxProc.kill()
-    console.log('killing shell')
+    console.log('killing compile shell')
   }
 }
 
@@ -54,9 +54,9 @@ module.exports.compileLinksFile = function (req, res, next) {
   io.of(socketPath).on('connection', function (socket) {
     socket.on('compile', function () {
       console.log(`Compiling Tutorial ${tutorialId} for user ${username}`)
+      killLinksProc()
       var promises = [module.exports.createConfigFile(username),
-        module.exports.createSourceFile(username, tutorialId),
-        killLinksProc()]
+        module.exports.createSourceFile(username, tutorialId)]
       Promise.all(promises)
         .then(() => {
           module.exports.linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
