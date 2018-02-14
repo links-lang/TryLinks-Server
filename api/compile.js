@@ -61,12 +61,12 @@ module.exports.compileLinksFile = function (req, res, next) {
         .then(() => {
           module.exports.linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
           module.exports.linxProc.stdout.on('data', (data) => {
-            socket.emit('shell output', data.toString())
+            socket.emit('compile error', 'STDOUT: ' + data.toString())
             console.log('sent stdout: ' + data)
           })
 
           module.exports.linxProc.stderr.on('data', (data) => {
-            socket.emit('compile error', data.toString())
+            socket.emit('compile error', 'STDERR: ' + data.toString())
             console.log('sent stderr: ' + data)
           })
           socket.emit('compiled', module.exports.port)
