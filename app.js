@@ -49,6 +49,10 @@ app.use(function (req, res, next) {
   next()
 })
 
+app.get('/readme', function (req, res) {
+  res.sendFile(path.join(__dirname, 'evaluation.pdf'))
+})
+
 app.get('/login', function (req, res) {
   res.sendFile(path.join(__dirname, 'login.html'))
 })
