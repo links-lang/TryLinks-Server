@@ -42,7 +42,7 @@ function updateUser (username, update) {
 }
 
 function removeUser (username) {
-  db.result('delete from "LinksUser" where "username"=$1', username)
+  return db.result('delete from "LinksUser" where "username"=$1', username)
 }
 
 module.exports = {

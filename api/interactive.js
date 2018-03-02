@@ -1,4 +1,4 @@
-const { spawn } = require('child_process')
+const spawn = require('child_process').spawn
 const forbiddenMessage = 'Error: \nYou cannot include "@" in the command, please check and try again.\n'
 
 function initInteractive (req, res, next) {

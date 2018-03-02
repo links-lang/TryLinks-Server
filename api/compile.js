@@ -8,7 +8,7 @@ module.exports.createConfigFile = username => {
     .then(port => {
       module.exports.port = port
       const filename = `tmp/${username}_config`
-      const data = `port=${port}\njslibdir=/Users/NickWu/.opam/4.04.0/lib/links/js\njsliburl=/lib/\ndatabase_driver=postgresql\ndatabase_args=localhost:5432:links:links`
+      const data = `port=${port}\njslibdir=/home/nick/.opam/4.04.0/lib/links/js\njsliburl=/lib/\ndatabase_driver=postgresql\ndatabase_args=localhost:5432:links:links`
       return fs.outputFile(filename, data)
     }).catch(err => {
       console.log(err)
@@ -33,7 +33,7 @@ function killLinksProc () {
       module.exports.linxProc !== undefined &&
       !module.exports.linxProc.killed) {
     module.exports.linxProc.kill()
-    console.log('killing shell')
+    console.log('killing compile shell')
   }
 }
 
@@ -54,19 +54,19 @@ module.exports.compileLinksFile = function (req, res, next) {
   io.of(socketPath).on('connection', function (socket) {
     socket.on('compile', function () {
       console.log(`Compiling Tutorial ${tutorialId} for user ${username}`)
+      killLinksProc()
       var promises = [module.exports.createConfigFile(username),
-        module.exports.createSourceFile(username, tutorialId),
-        killLinksProc()]
+        module.exports.createSourceFile(username, tutorialId)]
       Promise.all(promises)
         .then(() => {
           module.exports.linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
           module.exports.linxProc.stdout.on('data', (data) => {
-            socket.emit('shell output', data.toString())
+            socket.emit('compile error', 'STDOUT: ' + data.toString())
             console.log('sent stdout: ' + data)
           })
 
           module.exports.linxProc.stderr.on('data', (data) => {
-            socket.emit('compile error', data.toString())
+            socket.emit('compile error', 'STDERR: ' + data.toString())
             console.log('sent stderr: ' + data)
           })
           socket.emit('compiled', module.exports.port)

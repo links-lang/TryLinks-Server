@@ -4,7 +4,6 @@ var userAPI = require('../api/user')
 var fileAPI = require('../api/file')
 var interativeAPI = require('../api/interactive')
 var compileAPI = require('../api/compile')
-var resetAPI = require('../api/reset')
 
 router.post('/api/user/signup', userAPI.signup)
 router.post('/api/user/login', userAPI.login)
@@ -13,7 +12,7 @@ router.post('/api/file/read', fileAPI.readFile)
 router.post('/api/file/write', fileAPI.writeFile)
 router.get('/api/initInteractive', interativeAPI.initInteractive)
 router.get('/api/compile', compileAPI.compileLinksFile)
-router.get('/api/reset', resetAPI.resetLinksSourceAPI)
+router.get('/api/logout', userAPI.logout)
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
