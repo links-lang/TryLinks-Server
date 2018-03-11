@@ -6,6 +6,8 @@ var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var session = require('express-session')
 var secret = require('./secret')
+var compression = require('compression')
+var fs = require('fs')
 
 var index = require('./routes/index')
 
@@ -17,16 +19,20 @@ app.set('view engine', 'jade')
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'))
+app.use(compression({threshold: 0}))
+// // create a write stream (in append mode)
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'server.log'), {flags: 'a'})
+// // setup the logger
+app.use(logger('tiny', {stream: accessLogStream}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: 604800000 }))
 app.use(session({
   secret: secret.secret,
   saveUninitialized: true,
   resave: false,
-  cookie: {maxAge: 1000 * 60 * 60 * 24}
+  cookie: {maxAge: 604800000}
 }))
 
 app.use(function (req, res, next) {
@@ -39,7 +45,8 @@ app.use(function (req, res, next) {
   if (allowedOrigins.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin)
   }
-  // res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:8020');
+  if (!res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'public, max-age=604800000')
+  if (!res.getHeader('Vary')) res.setHeader('Vary', 'Accept-Encoding')
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   res.header('Access-Control-Allow-Credentials', true)

@@ -51,7 +51,9 @@ module.exports.compileLinksFile = function (req, res, next) {
   const tutorialId = req.session.user.last_tutorial
   var io = require('../sockets_base').io
   var socketPath = `/${username}_tutorial`
+  console.log('setting up config websocket')
   io.of(socketPath).on('connection', function (socket) {
+    console.log('compile socket connected')
     socket.on('compile', function () {
       console.log(`Compiling Tutorial ${tutorialId} for user ${username}`)
       killLinksProc()
@@ -78,6 +80,8 @@ module.exports.compileLinksFile = function (req, res, next) {
     socket.on('disconnect', function () {
       killLinksProc()
       delete io.nsps[socketPath]
+      console.log('deleted current namespace ' + socketPath)
+      console.log(io.nsps)
     })
   })
   res.status(200).json({path: socketPath})
