@@ -81,7 +81,11 @@ module.exports.compileLinksFile = function (req, res, next) {
       killLinksProc()
       delete io.nsps[socketPath]
       console.log('deleted current namespace ' + socketPath)
-      console.log(io.nsps)
+    })
+
+    socket.on('error', function (err) {
+      console.log('Socket.IO Error')
+      console.log(err.stack) // this is changed from your code in last comment
     })
   })
   res.status(200).json({path: socketPath})

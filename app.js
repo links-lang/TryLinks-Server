@@ -45,8 +45,8 @@ app.use(function (req, res, next) {
   if (allowedOrigins.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin)
   }
-  if (!res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'public, max-age=604800000')
-  if (!res.getHeader('Vary')) res.setHeader('Vary', 'Accept-Encoding')
+  if (req.originalUrl.indexOf('api') === -1 && !res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'public, max-age=604800000')
+  if (req.originalUrl.indexOf('api') === -1 && !res.getHeader('Vary')) res.setHeader('Vary', 'Accept-Encoding')
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   res.header('Access-Control-Allow-Credentials', true)
