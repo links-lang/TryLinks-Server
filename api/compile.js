@@ -37,6 +37,15 @@ function killLinksProc () {
   }
 }
 
+function sleep (milliseconds) {
+  var start = new Date().getTime()
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds) {
+      break
+    }
+  }
+}
+
 module.exports.compileLinksFile = function (req, res, next) {
   if (!req.session.user) {
     res.status(401)
@@ -71,6 +80,7 @@ module.exports.compileLinksFile = function (req, res, next) {
             socket.emit('compile error', 'STDERR: ' + data.toString())
             console.log('sent stderr: ' + data)
           })
+          sleep(2000)
           socket.emit('compiled', module.exports.port)
         }).catch(error => {
           console.log(error)
