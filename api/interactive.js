@@ -18,11 +18,11 @@ function initInteractive (req, res, next) {
     var shell = spawn('linx')
 
     socket.on('new command', function (cmd) {
-      console.log('new command: ' + cmd)
+      // console.log('new command: ' + cmd)
 
       const forbiddenPattern = /.*@/g
       if (forbiddenPattern.test(cmd)) {
-        console.log(`Encounter forbidden command: ${cmd}`)
+        // console.log(`Encounter forbidden command: ${cmd}`)
         socket.emit('shell error', forbiddenMessage)
       } else {
         shell.stdin.write(cmd + '\n')
@@ -31,18 +31,18 @@ function initInteractive (req, res, next) {
 
     shell.stdout.on('data', (data) => {
       socket.emit('shell output', data.toString())
-      console.log('sent stdout: ' + data)
+      // console.log('sent stdout: ' + data)
     })
 
     shell.stderr.on('data', (data) => {
       socket.emit('shell error', data.toString())
-      console.log('sent stderr: ' + data)
+      // console.log('sent stderr: ' + data)
     })
 
     socket.on('disconnect', function () {
-      console.log('killing shell')
+      // console.log('killing shell')
       shell.kill()
-      console.log('shell killed: ' + shell.killed)
+      // console.log('shell killed: ' + shell.killed)
       delete io.nsps[socketPath]
     })
   })

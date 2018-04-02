@@ -28,7 +28,6 @@ function updateUser (username, update) {
   }
   const lastTutorial = parseInt(update.last_tutorial)
   if (lastTutorial != null && lastTutorial !== undefined && !isNaN(lastTutorial)) {
-    console.log('last tutorial included')
     changeDetails.push('"last_tutorial"=' + lastTutorial)
   }
   var changeStr = changeDetails.join(',')

@@ -60,11 +60,11 @@ module.exports.compileLinksFile = function (req, res, next) {
   const tutorialId = req.session.user.last_tutorial
   var io = require('../sockets_base').io
   var socketPath = `/${username}_tutorial`
-  console.log('setting up config websocket')
+  // console.log('setting up config websocket')
   io.of(socketPath).on('connection', function (socket) {
-    console.log('compile socket connected')
+  // console.log('compile socket connected')
     socket.on('compile', function () {
-      console.log(`Compiling Tutorial ${tutorialId} for user ${username}`)
+      // console.log(`Compiling Tutorial ${tutorialId} for user ${username}`)
       killLinksProc()
       var promises = [module.exports.createConfigFile(username),
         module.exports.createSourceFile(username, tutorialId)]
@@ -73,12 +73,12 @@ module.exports.compileLinksFile = function (req, res, next) {
           module.exports.linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
           module.exports.linxProc.stdout.on('data', (data) => {
             socket.emit('compile error', 'STDOUT: ' + data.toString())
-            console.log('sent stdout: ' + data)
+            // console.log('sent stdout: ' + data)
           })
 
           module.exports.linxProc.stderr.on('data', (data) => {
             socket.emit('compile error', 'STDERR: ' + data.toString())
-            console.log('sent stderr: ' + data)
+            // console.log('sent stderr: ' + data)
           })
           sleep(2000)
           socket.emit('compiled', module.exports.port)
@@ -90,11 +90,11 @@ module.exports.compileLinksFile = function (req, res, next) {
     socket.on('disconnect', function () {
       killLinksProc()
       delete io.nsps[socketPath]
-      console.log('deleted current namespace ' + socketPath)
+      // console.log('deleted current namespace ' + socketPath)
     })
 
     socket.on('error', function (err) {
-      console.log('Socket.IO Error')
+      // console.log('Socket.IO Error')
       console.log(err.stack) // this is changed from your code in last comment
     })
   })

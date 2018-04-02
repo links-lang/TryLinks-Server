@@ -79,7 +79,6 @@ function update (req, res, next) {
   }
 
   const username = req.session.user.username
-  console.log(`update API: username=${username}`)
   // Check if user exists.
   userDB.getUserByUsername(username)
     .then((user) => {

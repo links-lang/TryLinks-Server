@@ -14,7 +14,7 @@ function readFile (req, res, next) {
   const username = req.session.user.username
   const tutorial = parseInt(req.body.tutorial)
   if (isNaN(tutorial)) {
-    res.status(403).json({status: 'error', message: 'Unrecongnizable tutorial number'})
+    res.status(403).json({status: 'error', message: 'Unrecognizable tutorial number'})
     return
   }
   fileDB.getFileForUser(username, tutorial)
