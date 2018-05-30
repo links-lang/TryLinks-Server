@@ -1,8 +1,8 @@
-var userDB = require('../db/user-quiries')
+var userDB = require('../db/user-queries')
 var bcrypt = require('bcryptjs')
 var reset = require('../api/reset')
 
-function signup (req, res, next) {
+function signUp (req, res, next) {
   const username = req.body.username
   const email = req.body.email
   const password = req.body.password
@@ -127,7 +127,7 @@ function logout (req, res, next) {
 }
 
 module.exports = {
-  signup: signup,
+  signUp: signUp,
   login: login,
   update: update,
   logout: logout

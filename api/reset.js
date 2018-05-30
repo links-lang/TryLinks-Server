@@ -1,11 +1,11 @@
-var fileDB = require('../db/file-quiries')
+var fileDB = require('../db/file-queries')
 
-const startSouces = require('./sources').startingLinksSources
+const startSources = require('./sources').startingLinksSources
 
 module.exports.resetLinksSource = function (username) {
   var promises = []
   for (var i = 0; i < 6; i++) {
-    promises.push(fileDB.updateFile(username, i, startSouces[i]))
+    promises.push(fileDB.updateFile(username, i, startSources[i]))
   }
   return Promise.all(promises)
 }

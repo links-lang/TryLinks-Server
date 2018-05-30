@@ -1,6 +1,6 @@
 const fs = require('fs-extra')
 const pf = require('portfinder')
-const fileDB = require('../db/file-quiries')
+const fileDB = require('../db/file-queries')
 const { spawn } = require('child_process')
 
 module.exports.createConfigFile = username => {

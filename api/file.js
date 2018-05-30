@@ -1,4 +1,4 @@
-var fileDB = require('../db/file-quiries')
+var fileDB = require('../db/file-queries')
 
 function readFile (req, res, next) {
   // Check cookie first.
@@ -48,7 +48,7 @@ function writeFile (req, res, next) {
   const tutorial = parseInt(req.body.tutorial)
   const fileData = req.body.fileData
   if (isNaN(tutorial)) {
-    res.status(403).json({status: 'error', message: 'Unrecongnizable tutorial number'})
+    res.status(403).json({status: 'error', message: 'Unrecognizable tutorial number'})
     return
   }
   fileDB.updateFile(username, tutorial, fileData)
