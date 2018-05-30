@@ -5,10 +5,6 @@ var db = require('./db-connect')
  * All DB actions for LinksUser.
  */
 
-function getAllUsers () {
-  return db.any('select * from "LinksUser"')
-}
-
 function getUserByUsername (username) {
   return db.one('select * from "LinksUser" where "username" = $1', username)
 }
@@ -45,7 +41,6 @@ function removeUser (username) {
 }
 
 module.exports = {
-  getAllUsers: getAllUsers,
   getUserByUsername: getUserByUsername,
   createUser: createUser,
   updateUser: updateUser,

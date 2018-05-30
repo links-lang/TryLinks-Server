@@ -1,24 +1,20 @@
 /* eslint-env mocha */
-var expect = require('chai').expect
-var userDB = require('../../db/user-quiries')
-var fileDB = require('../../db/file-quiries')
-
-// Testing variables
-const username = 'test'
-const email = 'test@abc.com'
-const password = 'something'
+const expect = require('chai').expect
+const userDB = require('../../db/user-queries')
+const fileDB = require('../../db/file-queries')
+const constants = require('./constants')
 
 describe('File DB tests', function () {
   beforeEach(function () {
-    return userDB.removeUser(username)
+    return userDB.removeUser(constants.username)
       .then(function () {
-        return userDB.createUser(username, email, password)
+        return userDB.createUser(constants.username, constants.email, constants.password)
       })
   })
 
   it('should have correct starting code after insert into DB', function () {
     for (var i = 0; i < 6; i++) {
-      fileDB.getFileForUser(username, i)
+      fileDB.getFileForUser(constants.username, i)
         .then((file) => {
           /* eslint-disable */
           expect(file.data).to.equal('')
@@ -29,9 +25,9 @@ describe('File DB tests', function () {
 
   it('should update file', function () {
     const newSource = 'new sources'
-    fileDB.updateFile(username, 0, newSource)
+    fileDB.updateFile(constants.username, 0, newSource)
       .then(function () {
-        return fileDB.getFileForUser(username, 0)
+        return fileDB.getFileForUser(constants.username, 0)
       }).then((file) => {
         expect(file.data).to.equal(newSource)
       })
