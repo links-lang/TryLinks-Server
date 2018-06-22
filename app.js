@@ -8,6 +8,7 @@ var session = require('express-session')
 var secret = require('./secret')
 var compression = require('compression')
 var fs = require('fs')
+require('dotenv').config()
 
 var index = require('./routes/index')
 
