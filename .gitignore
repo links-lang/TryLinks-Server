@@ -58,9 +58,6 @@ typings/
 # dotenv environment variables file
 .env
 
-# db connncet file because it contains username and pw
-db/db-connect.js
-
 # vs code configuration
 .vscode/
 
