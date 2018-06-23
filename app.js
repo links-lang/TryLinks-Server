@@ -5,7 +5,6 @@ var logger = require('morgan')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var session = require('express-session')
-var secret = require('./secret')
 var compression = require('compression')
 var fs = require('fs')
 require('dotenv').config()
@@ -28,7 +27,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 604800000 }))
 app.use(session({
-  secret: secret.secret,
+  secret: process.env.SECRET,
   saveUninitialized: true,
   resave: false,
   cookie: {maxAge: 604800000}
