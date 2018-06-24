@@ -37,7 +37,11 @@ app.use(function (req, res, next) {
   var allowedOrigins = [
     'http://localhost:8080',
     'http://devpractical.com:5000',
-    'http://www.devpractical.com:5000'
+    'http://www.devpractical.com:5000',
+    'http://devpractical.com',
+    'http://www.devpractical.com',
+    'https://devpractical.com',
+    'https://www.devpractical.com'
   ]
   var origin = req.headers.origin
   if (allowedOrigins.indexOf(origin) > -1) {
