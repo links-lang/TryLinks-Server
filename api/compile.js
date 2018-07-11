@@ -3,12 +3,14 @@ const pf = require('portfinder')
 const fileDB = require('../db/file-queries')
 const { spawn } = require('child_process')
 
+module.exports.sessionMap = new Map();
+
 module.exports.createConfigFile = username => {
   return pf.getPortPromise()
     .then(port => {
       module.exports.port = port
       const filename = `tmp/${username}_config`
-      const data = `port=${port}\njslibdir=/home/nick/.opam/4.04.0/lib/links/js\njsliburl=/lib/\ndatabase_driver=postgresql\ndatabase_args=localhost:5432:links:links`
+      const data = `port=${port}\njslibdir=/home/arek/.opam/4.06.0/lib/links/js\njsliburl=/lib/\ndatabase_driver=postgresql\ndatabase_args=localhost:5432:links:links`
       return fs.outputFile(filename, data)
     }).catch(err => {
       console.log(err)
@@ -28,12 +30,13 @@ module.exports.createSourceFile = (username, tutorialId) => {
     })
 }
 
-function killLinksProc () {
-  if (module.exports.linxProc !== null &&
-      module.exports.linxProc !== undefined &&
-      !module.exports.linxProc.killed) {
-    module.exports.linxProc.kill()
-    console.log('killing compile shell')
+function killLinksProc (username) {
+  if (module.exports.sessionMap.get(username) !== null &&
+    module.exports.sessionMap.get(username) !== undefined &&
+      !module.exports.sessionMap.get(username).killed) {
+    module.exports.sessionMap.get(username).kill()
+    module.exports.sessionMap.delete(username)
+    console.log('Killing compile shell for user ' + username)
   }
 }
 
@@ -65,30 +68,34 @@ module.exports.compileLinksFile = function (req, res, next) {
   // console.log('compile socket connected')
     socket.on('compile', function () {
       // console.log(`Compiling Tutorial ${tutorialId} for user ${username}`)
-      killLinksProc()
       var promises = [module.exports.createConfigFile(username),
         module.exports.createSourceFile(username, tutorialId)]
       Promise.all(promises)
         .then(() => {
-          module.exports.linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
-          module.exports.linxProc.stdout.on('data', (data) => {
+          killLinksProc(username)
+          let linxProc = spawn('linx', [`--config=tmp/${username}_config`, `tmp/${username}_source.links`])
+          linxProc.stdout.on('data', (data) => {
             socket.emit('compile error', 'STDOUT: ' + data.toString())
             // console.log('sent stdout: ' + data)
           })
 
-          module.exports.linxProc.stderr.on('data', (data) => {
+          linxProc.stderr.on('data', (data) => {
             socket.emit('compile error', 'STDERR: ' + data.toString())
             // console.log('sent stderr: ' + data)
           })
-          sleep(2000)
+
+          module.exports.sessionMap.set(username, linxProc)
+          sleep(2500)
+
           socket.emit('compiled', module.exports.port)
+
         }).catch(error => {
           console.log(error)
           socket.emit('compile error', 'could not build config and source files')
         })
     })
     socket.on('disconnect', function () {
-      killLinksProc()
+      killLinksProc(username)
       delete io.nsps[socketPath]
       // console.log('deleted current namespace ' + socketPath)
     })
