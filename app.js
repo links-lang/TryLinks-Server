@@ -35,8 +35,8 @@ app.use(session({
 
 app.use(function (req, res, next) {
   var allowedOrigins = [
-    'http://46.101.83.66'
-    // 'http://localhost:8080',
+    'http://46.101.83.66',
+    'http://localhost:8080'
     // 'http://devpractical.com:5000',
     // 'http://www.devpractical.com:5000',
     // 'http://devpractical.com',

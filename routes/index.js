@@ -5,6 +5,8 @@ var fileAPI = require('../api/file')
 var interactiveAPI = require('../api/interactive')
 var compileAPI = require('../api/compile')
 
+var tutorialAPI = require('../api/tutorial')
+
 router.post('/api/user/signup', userAPI.signUp)
 router.post('/api/user/login', userAPI.login)
 router.post('/api/user/update', userAPI.update)
@@ -13,6 +15,9 @@ router.post('/api/file/write', fileAPI.writeFile)
 router.get('/api/initInteractive', interactiveAPI.initInteractive)
 router.get('/api/compile', compileAPI.compileLinksFile)
 router.get('/api/logout', userAPI.logout)
+
+router.post('/api/tutorial/', tutorialAPI.getDescription)
+router.post('/api/tutorial/create', tutorialAPI.createTutorial)
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
