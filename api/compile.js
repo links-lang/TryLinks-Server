@@ -10,7 +10,7 @@ module.exports.createConfigFile = username => {
     .then(port => {
       module.exports.port = port
       const filename = `tmp/${username}_config`
-      const data = `port=${port}\njslibdir=/home/arek/.opam/4.06.0/lib/links/js\njsliburl=/lib/\ndatabase_driver=postgresql\ndatabase_args=localhost:5432:links:links`
+      const data = `port=${port}\n${process.env.LINKS_CONFIG}`
       return fs.outputFile(filename, data)
     }).catch(err => {
       console.log(err)
@@ -85,7 +85,9 @@ module.exports.compileLinksFile = function (req, res, next) {
           })
 
           module.exports.sessionMap.set(username, linxProc)
-          sleep(2500)
+
+          // Time required for the code to compile; may differ depending on the environment
+          sleep(process.env.COMPILE_ENV_TIME)
 
           socket.emit('compiled', module.exports.port)
 
