@@ -20,7 +20,8 @@ function createTutorial(req, res, next) {
         message: `Tutorial was successfully created`
       });
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err);
       res.status(500).json({
         status: 'error',
         message: 'Could not create a new tutorial'});
@@ -40,21 +41,40 @@ function getDescription(req, res, next) {
   }
 
   tutorialDB.getTutorialDescription(tutorialId)
-    .then((description) => {
+    .then((result) => {
       res.status(200).json({
         status: 'success',
-        description: description
+        description: result.description
       })
     })
-    .catch(() => {
-    res.status(500).json({
-        status: 'error',
-        message: 'Cannot retrieve the tutorial\'s description'
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+          status: 'error',
+          message: 'Cannot retrieve the tutorial\'s description'
       });
     })
 };
 
+function getHeaders(req, res) {
+  tutorialDB.getHeaders()
+    .then((result) => {
+      res.status(200).json({
+        status: 'success',
+        headers: result
+      })
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        status: 'error',
+        message: 'Cannot retrieve the tutorials\' headers'
+      });
+    })
+}
+
 module.exports = {
   createTutorial: createTutorial,
-  getDescription: getDescription
+  getDescription: getDescription,
+  getHeaders: getHeaders
 };

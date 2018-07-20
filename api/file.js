@@ -1,4 +1,5 @@
 var fileDB = require('../db/file-queries')
+var tutorialDB = require('../db/tutorial-queries')
 
 function readFile (req, res, next) {
   // Check cookie first.
@@ -14,9 +15,12 @@ function readFile (req, res, next) {
   const username = req.session.user.username
   const tutorial = parseInt(req.body.tutorial)
   if (isNaN(tutorial)) {
-    res.status(403).json({status: 'error', message: 'Unrecognizable tutorial number'})
+    res.status(403).json({
+      status: 'error',
+      message: 'Unrecognizable tutorial number'})
     return
   }
+
   fileDB.getFileForUser(username, tutorial)
     .then((result) => {
       res.status(200).json({
@@ -24,12 +28,24 @@ function readFile (req, res, next) {
         fileData: result.data
       })
     })
+    // User retrieves the tutorial for the first time
     .catch((err) => {
-      console.log(err)
-      res.status(500).json({
-        status: 'error',
-        message: 'failed to extract files from DB'
-      })
+      console.log(err);
+      fileDB.createFileForUser(username, tutorial)
+        .then(() => { fileDB.getFileForUser(username, tutorial) })
+        .then((result) => {
+          res.status(200).json({
+            status: 'success',
+            fileData: result.data
+          })
+        })
+        .catch((err) => {
+          console.log(err)
+          res.status(500).json({
+            status: 'error',
+            message: 'failed to extract files from DB'
+          })
+        })
     })
 }
 

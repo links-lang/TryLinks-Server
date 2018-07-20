@@ -16,8 +16,9 @@ router.get('/api/initInteractive', interactiveAPI.initInteractive)
 router.get('/api/compile', compileAPI.compileLinksFile)
 router.get('/api/logout', userAPI.logout)
 
-router.post('/api/tutorial/', tutorialAPI.getDescription)
+router.post('/api/tutorial/description', tutorialAPI.getDescription)
 router.post('/api/tutorial/create', tutorialAPI.createTutorial)
+router.get('/api/tutorial/headers', tutorialAPI.getHeaders)
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
