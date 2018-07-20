@@ -1,18 +1,10 @@
 # TryLinks Server
 
-TryLinks server repository.
-
-Live at [here](http://devpractical.com:5000/web).
-
-Powered by [Express](https://expressjs.com/), [Socket.IO](https://socket.io/), and more.
+This is the TryLinks server repository, powered by [Express](https://expressjs.com/), [Socket.IO](https://socket.io/), and more.
 
 ## Usage
 
-First clone this repository using
-
-~~~bash
-git clone https://github.com/NickWu007/TryLinks-Server.git
-~~~
+First clone this repository using `git clone`.
 
 Then build the relevant node modules
 
@@ -20,12 +12,11 @@ Then build the relevant node modules
 npm install
 ~~~
 
-You will also need to supply a `secret.js` at the root, as the base of encryption. A template of this file looks like this:
+We use [dotenv](https://github.com/motdotla/dotenv) to provide various configurations to the server, such as database connection, session encryption secret, and so on. To run TryLinks server, you will need to create a '.env' file yourself. A template of this file looks like this:
 
-~~~javascript
-module.exports = {
-  secret: 'YOUR_OWN_SECRET'
-}
+~~~
+DB_CONNECTION_STRING=...
+SECRET=...
 ~~~
 
 After that, the server can be started by using
