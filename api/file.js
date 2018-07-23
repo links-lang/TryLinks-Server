@@ -31,21 +31,10 @@ function readFile (req, res, next) {
     // User retrieves the tutorial for the first time
     .catch((err) => {
       console.log(err);
-      fileDB.createFileForUser(username, tutorial)
-        .then(() => { fileDB.getFileForUser(username, tutorial) })
-        .then((result) => {
-          res.status(200).json({
-            status: 'success',
-            fileData: result.data
-          })
-        })
-        .catch((err) => {
-          console.log(err)
-          res.status(500).json({
-            status: 'error',
-            message: 'failed to extract files from DB'
-          })
-        })
+      res.status(500).json({
+        status: 'error',
+        message: 'failed to extract files from DB'
+      })
     })
 }
 
