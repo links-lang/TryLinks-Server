@@ -1,9 +1,20 @@
 const tutorialDB = require('../db/tutorial-queries')
 
 function createTutorial (req, res, next) {
+  // Check if the user is logged in
+  if (!req.session.user) {
+    res.status(401)
+      .json({
+        status: 'error',
+        message: 'Creation of a new tutorial requires to be logged-in.'
+      })
+    return
+  }
+
   // Check if the user has admin rights
   if (!req.session.user.is_admin) {
-    res.status(401)
+    console.log(`Unauthorized user (${req.session.user.username}) attempted to create a new tutorial`)
+    res.status(403)
       .json({
         status: 'error',
         message: 'Insufficient privileges. Only admin can add a new tutorial.'
