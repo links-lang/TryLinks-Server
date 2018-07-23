@@ -50,7 +50,10 @@ function login (req, res, next) {
           .json({
             status: 'success',
             message: 'Login successful',
-            data: user
+            data: {
+              username: user.username,
+              last_tutorial: user.id
+            }
           })
       } else {
         res.status(401)
