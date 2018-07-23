@@ -52,7 +52,8 @@ function login (req, res, next) {
             message: 'Login successful',
             data: {
               username: user.username,
-              last_tutorial: user.id
+              last_tutorial: user.last_tutorial,
+              is_admin: user.is_admin
             }
           })
       } else {
