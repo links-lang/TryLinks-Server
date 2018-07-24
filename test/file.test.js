@@ -17,86 +17,86 @@ var helper = require('./helper')
 describe('User login', function () {
   var baseUrl = 'http://localhost:5000'
 
-  // describe('Tests for api/file/read', function () {
-  //   it('should return error when unauthenticated', function (done) {
-  //     var payload = {
-  //       tutorial: 0
-  //     }
-  //     request(baseUrl)
-  //       .post('/api/file/read')
-  //       .send(payload)
-  //       .expect('Content-Type', /json/)
-  //       .expect(401)
-  //       .end(function (err, res) {
-  //         if (err) throw err
-  //         done()
-  //       })
-  //   })
+  describe('Tests for api/file/read', function () {
+    it('should return error when unauthenticated', function (done) {
+      var payload = {
+        tutorial: 0
+      }
+      request(baseUrl)
+        .post('/api/file/read')
+        .send(payload)
+        .expect('Content-Type', /json/)
+        .expect(401)
+        .end(function (err, res) {
+          if (err) throw err
+          done()
+        })
+    })
 
-  //   it('should return error when reading non-existent files', function (done) {
-  //     var loginProfile = {
-  //       username: 'test',
-  //       password: 'test'
-  //     }
+    it('should return error when reading non-existent files', function (done) {
+      var loginProfile = {
+        username: 'test',
+        password: 'test'
+      }
 
-  //     var payload = {
-  //       tutorial: 1000000
-  //     }
+      var payload = {
+        tutorial: 1000000
+      }
 
-  //     request(baseUrl)
-  //       .post('/api/user/login')
-  //       .send(loginProfile)
-  //       .expect('Content-Type', /json/)
-  //       .expect(200)
-  //       .end(function (err, res) {
-  //         if (err) throw err
-  //         var cookie = res.headers['set-cookie']
-  //         request(baseUrl)
-  //           .post('/api/file/read')
-  //           .set('cookie', cookie)
-  //           .send(payload)
-  //           .expect('Content-Type', /json/)
-  //           .expect(500)
-  //           .end(function (err, res) {
-  //             if (err) throw err
-  //             done()
-  //           })
-  //       })
-  //   })
+      request(baseUrl)
+        .post('/api/user/login')
+        .send(loginProfile)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end(function (err, res) {
+          if (err) throw err
+          var cookie = res.headers['set-cookie']
+          request(baseUrl)
+            .post('/api/file/read')
+            .set('cookie', cookie)
+            .send(payload)
+            .expect('Content-Type', /json/)
+            .expect(500)
+            .end(function (err, res) {
+              if (err) throw err
+              done()
+            })
+        })
+    })
 
-  //   it('should return file data when reading files after authentication', function (done) {
-  //     var loginProfile = {
-  //       username: 'test',
-  //       password: 'test'
-  //     }
+    it('should return file data when reading files after authentication', function (done) {
+      var loginProfile = {
+        username: 'test',
+        password: 'test'
+      }
 
-  //     var payload = {
-  //       tutorial: 0
-  //     }
+      var payload = {
+        tutorial: 0
+      }
 
-  //     request(baseUrl)
-  //       .post('/api/user/login')
-  //       .send(loginProfile)
-  //       .expect('Content-Type', /json/)
-  //       .expect(200)
-  //       .end(function (err, res) {
-  //         if (err) throw err
-  //         var cookie = res.headers['set-cookie']
-  //         request(baseUrl)
-  //           .post('/api/file/read')
-  //           .set('cookie', cookie)
-  //           .send(payload)
-  //           .expect('Content-Type', /json/)
-  //           .expect(200)
-  //           .end(function (err, res) {
-  //             if (err) throw err
-  //             // TODO: update this to compare to actual source code when migration is complete.
-  //             assert(res.body.fileData.length > 0, 'expected non-empty file entries!')
-  //             done()
-  //           })
-  //       })
-  //   })
-  // })
+      request(baseUrl)
+        .post('/api/user/login')
+        .send(loginProfile)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end(function (err, res) {
+          if (err) throw err
+          var cookie = res.headers['set-cookie']
+          request(baseUrl)
+            .post('/api/file/read')
+            .set('cookie', cookie)
+            .send(payload)
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .end(function (err, res) {
+              if (err) throw err
+              // TODO: update this to compare to actual source code when migration is complete.
+              assert(res.body.fileData.length > 0, 'expected non-empty file entries!')
+              done()
+            })
+        })
+    })
+  })
 
   describe('Tests for api/file/write', function () {
     it('should return error when unauthenticated', function (done) {
