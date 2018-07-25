@@ -12,6 +12,7 @@
 
 var assert = require('assert')
 var request = require('supertest')
+var helper = require('./helper')
 
 describe('User login', function () {
   var baseUrl = 'http://localhost:5000'
@@ -95,7 +96,7 @@ describe('User login', function () {
       }
 
       var profile = {
-        email: `${Math.random().toString(36).substring(8)}@xyz.com`,
+        email: `${helper.generateRandomString(16)}@xyz.com`,
         password: null,
         last_tutorial: Math.floor(Math.random() * Math.floor(6))
       }
