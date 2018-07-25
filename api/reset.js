@@ -1,6 +1,6 @@
 var fileDB = require('../db/file-queries')
 
-const startSources = require('./sources').startingLinksSources
+const startSources = require('../tutorials/sources').startingLinksSources
 
 module.exports.resetLinksSource = function (username) {
   var promises = []
