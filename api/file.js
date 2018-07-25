@@ -1,5 +1,4 @@
 var fileDB = require('../db/file-queries')
-var tutorialDB = require('../db/tutorial-queries')
 
 function readFile (req, res, next) {
   // Check cookie first.
@@ -30,7 +29,7 @@ function readFile (req, res, next) {
     })
     // User retrieves the tutorial for the first time
     .catch((err) => {
-      console.log(err);
+      console.log(err)
       res.status(500).json({
         status: 'error',
         message: 'failed to extract files from DB'

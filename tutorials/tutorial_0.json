@@ -1,5 +1,0 @@
-{
-  "title": "Hello, world!",
-  "description": "## Lesson 1 Hello World\n#### You can navigate to other tutorials by click the menu icon on the upper left corner.\nLet's start with the simplest possible program: one that just prints \"Hello, world\" (albeit on a Web page). The starter code will not work right away, but you can fix it real quick!\nThis is a tiny bit more complicated than you might expect. Let's go through the main components of the program:",
-  "source": "fun mainPage (_) {\n    # This will show a page.\n    # Exercise: add a <h1> tag into the page that says\n    # \"Hello World!\"\n      page \n        <html>\n        <body>\n        </body>\n        </html>\n    }\n    \n    fun main () {\n      addRoute(\"\",mainPage);\n      servePages()\n    }\n    \n    main()"
-}
