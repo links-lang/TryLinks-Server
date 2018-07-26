@@ -14,6 +14,7 @@ function initInteractive (req, res, next) {
   var io = require('../sockets_base').io
   var socketPath = '/' + req.session.user.username
   io.of(socketPath).on('connection', function (socket) {
+    console.log('new connection: ' + socketPath)
     // start new shell process
     var shell = spawn('linx')
 
