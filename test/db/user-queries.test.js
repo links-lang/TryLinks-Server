@@ -41,7 +41,7 @@ describe('User DB tests', function () {
 
   it('should have all 6 tutorials after user is created', function () {
     for (var i = 0; i < 6; i++) {
-      fileDB.getFileForUser(constants.username, i)
+      fileDB.getTutorialSourceForUser(constants.username, i)
         .then((file) => {
           /* eslint-disable */
           expect(file.data).to.not.be.null
@@ -54,7 +54,7 @@ describe('User DB tests', function () {
     userDB.removeUser(constants.username)
       .then(function () {
         for (var i = 0; i < 6; i++) {
-          fileDB.getFileForUser(constants.username, i)
+          fileDB.getTutorialSourceForUser(constants.username, i)
             .then((file) => {
               fail()
             })

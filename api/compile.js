@@ -3,7 +3,7 @@ const pf = require('portfinder')
 const fileDB = require('../db/file-queries')
 const { spawn } = require('child_process')
 
-module.exports.sessionMap = new Map();
+module.exports.sessionMap = new Map()
 
 module.exports.createConfigFile = username => {
   return pf.getPortPromise()
@@ -19,7 +19,7 @@ module.exports.createConfigFile = username => {
 }
 
 module.exports.createSourceFile = (username, tutorialId) => {
-  return fileDB.getFileForUser(username, tutorialId)
+  return fileDB.getTutorialSourceForUser(username, tutorialId)
     .then((result) => {
       const fileData = result.data
       const filename = `tmp/${username}_source.links`
@@ -90,7 +90,6 @@ module.exports.compileLinksFile = function (req, res, next) {
           sleep(process.env.COMPILE_ENV_TIME)
 
           socket.emit('compiled', module.exports.port)
-
         }).catch(error => {
           console.log(error)
           socket.emit('compile error', 'could not build config and source files')

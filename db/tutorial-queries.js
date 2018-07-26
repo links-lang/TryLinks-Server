@@ -14,7 +14,7 @@ function getTutorialDescription (tutorialId) {
 }
 
 function getHeaders () {
-  return db.many('SELECT tutorial_id, title FROM "LinksTutorial" ORDER BY tutorial_id ASC')
+  return db.many('SELECT "tutorial_id", "title" FROM "LinksTutorial" ORDER BY tutorial_id ASC')
 }
 
 module.exports = {

@@ -20,14 +20,13 @@ function readFile (req, res, next) {
     return
   }
 
-  fileDB.getFileForUser(username, tutorial)
+  fileDB.getTutorialSourceForUser(username, tutorial)
     .then((result) => {
       res.status(200).json({
         status: 'success',
         fileData: result.data
       })
     })
-    // User retrieves the tutorial for the first time
     .catch((err) => {
       console.log(err)
       res.status(500).json({

@@ -1,6 +1,5 @@
 var userDB = require('../db/user-queries')
 var bcrypt = require('bcryptjs')
-var reset = require('../api/reset')
 
 function signUp (req, res, next) {
   const username = req.body.username
@@ -22,7 +21,6 @@ function signUp (req, res, next) {
       const hash = bcrypt.hashSync(password, salt)
 
       userDB.createUser(username, email, hash)
-        .then(() => reset.resetLinksSource(username))
         .then(() => {
           res.status(200)
             .json({
