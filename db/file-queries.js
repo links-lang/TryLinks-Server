@@ -4,8 +4,14 @@ var db = require('./db-connect')
 /**
  * All DB actions for LinksUser.
  */
-function getFileForUser (username, tutorialId) {
-  return db.one('select "data" from "LinksFile" where "username" = $1 and "tutorial_id"=$2', [username, tutorialId])
+function getTutorialSourceForUser (username, tutorialId) {
+  return db.task('getTutorialSourceForUser', t => {
+    return db.oneOrNone('SELECT "data" FROM "LinksFile" WHERE "username" = $1 AND "tutorial_id"=$2', [username, tutorialId])
+      .then(file => {
+        return file || t.one('INSERT INTO "LinksFile" ("data", "tutorial_id", "username") VALUES' +
+          '((SELECT "source" FROM "LinksTutorial" WHERE "tutorial_id" = $1), $1, $2) RETURNING "data"', [tutorialId, username])
+      })
+  })
 }
 
 function updateFile (username, tutorialId, data) {
@@ -13,11 +19,11 @@ function updateFile (username, tutorialId, data) {
     const err = {status: 'error', message: 'empty or null source to update'}
     throw err
   }
-  return db.none('update "LinksFile" set "data"=$1 where "username" = $2 and "tutorial_id"=$3',
+  return db.none('UPDATE "LinksFile" SET "data"=$1 WHERE "username" = $2 AND "tutorial_id"=$3',
     [data, username, tutorialId])
 }
 
 module.exports = {
-  getFileForUser: getFileForUser,
+  getTutorialSourceForUser: getTutorialSourceForUser,
   updateFile: updateFile
 }

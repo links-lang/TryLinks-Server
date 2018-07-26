@@ -11,7 +11,7 @@ function getUserByUsername (username) {
 
 function createUser (username, email, password) {
   return db.none('insert into "LinksUser"("username", "email", "password", "last_tutorial")' +
-        'values($1, $2, $3, 0)', [username, email, password])
+        'values($1, $2, $3, 1)', [username, email, password])
 }
 
 function updateUser (username, update) {

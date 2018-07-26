@@ -14,7 +14,7 @@ describe('File DB tests', function () {
 
   it('should have correct starting code after insert into DB', function () {
     for (var i = 0; i < 6; i++) {
-      fileDB.getFileForUser(constants.username, i)
+      fileDB.getTutorialSourceForUser(constants.username, i)
         .then((file) => {
           /* eslint-disable */
           expect(file.data).to.equal('')
@@ -27,7 +27,7 @@ describe('File DB tests', function () {
     const newSource = 'new sources'
     fileDB.updateFile(constants.username, 0, newSource)
       .then(function () {
-        return fileDB.getFileForUser(constants.username, 0)
+        return fileDB.getTutorialSourceForUser(constants.username, 0)
       }).then((file) => {
         expect(file.data).to.equal(newSource)
       })

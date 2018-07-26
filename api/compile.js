@@ -19,7 +19,7 @@ module.exports.createConfigFile = username => {
 }
 
 module.exports.createSourceFile = (username, tutorialId) => {
-  return fileDB.getFileForUser(username, tutorialId)
+  return fileDB.getTutorialSourceForUser(username, tutorialId)
     .then((result) => {
       const fileData = result.data
       const filename = `tmp/${username}_source.links`
