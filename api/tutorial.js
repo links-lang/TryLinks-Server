@@ -1,36 +1,9 @@
 const tutorialDB = require('../db/tutorial-queries')
-
-// Check if the user is logged-in
-function isLoggedIn (req, res) {
-  // Check if the user is logged in
-  if (!req.session.user) {
-    res.status(401)
-      .json({
-        status: 'error',
-        message: 'Creation of a new tutorial requires to be logged-in.'
-      })
-    return false
-  }
-  return true
-}
-
-// Check if the user has admin rights
-function isAdmin (req, res) {
-  if (!req.session.user.is_admin) {
-    console.log(`Unauthorized user (${req.session.user.username}) attempted to create a new tutorial`)
-    res.status(403)
-      .json({
-        status: 'error',
-        message: 'Insufficient privileges. Only admin can add a new tutorial.'
-      })
-    return false
-  }
-  return true
-}
+const authCheck = require('../utils/authentication-check')
 
 function createTutorial (req, res, next) {
-  if (!isLoggedIn(req, res)) return
-  if (!isAdmin(req, res)) return
+  if (!authCheck.isLoggedIn(req, res)) return
+  if (!authCheck.isAdmin(req, res)) return
 
   const title = req.body.title
   const description = req.body.description
@@ -123,8 +96,8 @@ function getDefaultTutorialId (req, res) {
 }
 
 function updateTutorial (req, res) {
-  if (!isLoggedIn(req, res)) return
-  if (!isAdmin(req, res)) return
+  if (!authCheck.isLoggedIn(req, res)) return
+  if (!authCheck.isAdmin(req, res)) return
 
   const tutorialId = parseInt(req.body.tutorialId)
   const title = req.body.title
@@ -148,8 +121,8 @@ function updateTutorial (req, res) {
 }
 
 function removeTutorial (req, res) {
-  if (!isLoggedIn(req, res)) return
-  if (!isAdmin(req, res)) return
+  if (!authCheck.isLoggedIn(req, res)) return
+  if (!authCheck.isAdmin(req, res)) return
 
   const tutorialId = parseInt(req.body.tutorialId)
 
