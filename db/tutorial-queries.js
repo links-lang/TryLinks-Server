@@ -18,7 +18,7 @@ function getHeaders () {
 }
 
 function getDefaultTutorialId () {
-  return db.one('SELECT MIN(tutorial_id) FROM "LinksTutorial"')
+  return db.one('SELECT MIN("tutorial_id") FROM "LinksTutorial"')
 }
 
 function updateTutorial (tutorialId, title, description, source) {
