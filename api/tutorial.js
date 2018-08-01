@@ -1,7 +1,7 @@
 const tutorialDB = require('../db/tutorial-queries')
 const authCheck = require('../utils/authentication-check')
 
-function createTutorial (req, res, next) {
+function createTutorial (req, res) {
   if (!authCheck.isLoggedIn(req, res)) return
   if (!authCheck.isAdmin(req, res)) return
 
@@ -33,7 +33,34 @@ function createTutorial (req, res, next) {
     })
 }
 
-function getDescription (req, res, next) {
+function getTutorial (req, res) {
+  const tutorialId = parseInt(req.body.tutorialId)
+
+  if (isNaN(tutorialId)) {
+    res.status(403).json({
+      status: 'error',
+      message: 'Unrecognizable tutorial number.'
+    })
+    return
+  }
+
+  tutorialDB.getTutorial(tutorialId)
+    .then((result) => {
+      res.status(200).json({
+        status: 'success',
+        tutorial: result
+      })
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).json({
+        status: 'error',
+        message: 'Cannot retrieve the tutorial\'s description.'
+      })
+    })
+}
+
+function getDescription (req, res) {
   const tutorialId = parseInt(req.body.tutorialId)
 
   if (isNaN(tutorialId)) {
@@ -144,6 +171,7 @@ function removeTutorial (req, res) {
 
 module.exports = {
   createTutorial: createTutorial,
+  getTutorial: getTutorial,
   getDescription: getDescription,
   getHeaders: getHeaders,
   getDefaultTutorialId: getDefaultTutorialId,
