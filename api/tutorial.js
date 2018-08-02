@@ -1,5 +1,7 @@
 const tutorialDB = require('../db/tutorial-queries')
 const authCheck = require('../utils/authentication-check')
+const QueryResultError = require('pg-promise').errors.QueryResultError;
+const queryErrorCode = require('pg-promise').errors.queryResultErrorCode;
 
 function createTutorial (req, res) {
   if (!authCheck.isLoggedIn(req, res)) return
@@ -34,7 +36,7 @@ function createTutorial (req, res) {
 }
 
 function getTutorial (req, res) {
-  const tutorialId = parseInt(req.body.tutorialId)
+  const tutorialId = parseInt(req.params.id)
 
   if (isNaN(tutorialId)) {
     res.status(403).json({
@@ -52,10 +54,19 @@ function getTutorial (req, res) {
       })
     })
     .catch((err) => {
+      if (err instanceof QueryResultError) {
+        if (err.code === queryErrorCode.noData) {
+          res.status(404).json({
+            status: 'error',
+            message: `A tutorial with an id ${tutorialId} does not exist.`
+          })
+          return
+        }
+      }
       console.log(err)
       res.status(500).json({
         status: 'error',
-        message: 'Cannot retrieve the tutorial\'s description.'
+        message: 'Cannot retrieve the tutorial\'s information.'
       })
     })
 }

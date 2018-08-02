@@ -19,10 +19,10 @@ router.get('/api/logout', userAPI.logout)
 router.post('/api/tutorial/create', tutorialAPI.createTutorial)
 router.post('/api/tutorial/update', tutorialAPI.updateTutorial)
 router.post('/api/tutorial/delete', tutorialAPI.removeTutorial)
-router.post('/api/tutorial', tutorialAPI.getTutorial)
 router.post('/api/tutorial/description', tutorialAPI.getDescription)
 router.get('/api/tutorial/headers', tutorialAPI.getHeaders)
 router.get('/api/tutorial/defaultId', tutorialAPI.getDefaultTutorialId)
+router.get('/api/tutorial/:id', tutorialAPI.getTutorial)
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
