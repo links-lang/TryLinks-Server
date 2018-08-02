@@ -1,7 +1,7 @@
 const tutorialDB = require('../db/tutorial-queries')
 const authCheck = require('../utils/authentication-check')
-const QueryResultError = require('pg-promise').errors.QueryResultError;
-const queryErrorCode = require('pg-promise').errors.queryResultErrorCode;
+const QueryResultError = require('pg-promise').errors.QueryResultError
+const queryErrorCode = require('pg-promise').errors.queryResultErrorCode
 
 function createTutorial (req, res) {
   if (!authCheck.isLoggedIn(req, res)) return
