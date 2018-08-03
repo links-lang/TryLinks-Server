@@ -9,6 +9,10 @@ function createTutorial (title, description, source) {
     [title, description, source])
 }
 
+function getTutorial (tutorialId) {
+  return db.one('SELECT * FROM "LinksTutorial" WHERE "tutorial_id" = $1', tutorialId)
+}
+
 function getTutorialDescription (tutorialId) {
   return db.one('SELECT "description" FROM "LinksTutorial" WHERE "tutorial_id" = $1', tutorialId)
 }
@@ -32,6 +36,7 @@ function removeTutorial (tutorialId) {
 
 module.exports = {
   createTutorial: createTutorial,
+  getTutorial: getTutorial,
   getTutorialDescription: getTutorialDescription,
   getHeaders: getHeaders,
   getDefaultTutorialId: getDefaultTutorialId,

@@ -1,7 +1,9 @@
 const tutorialDB = require('../db/tutorial-queries')
 const authCheck = require('../utils/authentication-check')
+const QueryResultError = require('pg-promise').errors.QueryResultError
+const queryErrorCode = require('pg-promise').errors.queryResultErrorCode
 
-function createTutorial (req, res, next) {
+function createTutorial (req, res) {
   if (!authCheck.isLoggedIn(req, res)) return
   if (!authCheck.isAdmin(req, res)) return
 
@@ -33,7 +35,43 @@ function createTutorial (req, res, next) {
     })
 }
 
-function getDescription (req, res, next) {
+function getTutorial (req, res) {
+  const tutorialId = parseInt(req.params.id)
+
+  if (isNaN(tutorialId)) {
+    res.status(403).json({
+      status: 'error',
+      message: 'Unrecognizable tutorial number.'
+    })
+    return
+  }
+
+  tutorialDB.getTutorial(tutorialId)
+    .then((result) => {
+      res.status(200).json({
+        status: 'success',
+        tutorial: result
+      })
+    })
+    .catch((err) => {
+      if (err instanceof QueryResultError) {
+        if (err.code === queryErrorCode.noData) {
+          res.status(404).json({
+            status: 'error',
+            message: `A tutorial with an id ${tutorialId} does not exist.`
+          })
+          return
+        }
+      }
+      console.log(err)
+      res.status(500).json({
+        status: 'error',
+        message: 'Cannot retrieve the tutorial\'s information.'
+      })
+    })
+}
+
+function getDescription (req, res) {
   const tutorialId = parseInt(req.body.tutorialId)
 
   if (isNaN(tutorialId)) {
@@ -144,6 +182,7 @@ function removeTutorial (req, res) {
 
 module.exports = {
   createTutorial: createTutorial,
+  getTutorial: getTutorial,
   getDescription: getDescription,
   getHeaders: getHeaders,
   getDefaultTutorialId: getDefaultTutorialId,
