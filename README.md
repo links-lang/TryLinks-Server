@@ -1,3 +1,7 @@
+# ARCHIVED REPOSITORY
+
+This repository is superseded by more recent developments and has been archived.
+
 # TryLinks Server
 
 This is the TryLinks server repository, powered by [Express](https://expressjs.com/), [Socket.IO](https://socket.io/), and more.
